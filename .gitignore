@@ -1,0 +1,11 @@
+*.p7s
+*.exe*
+*.pdb*
+*.exp*
+*.ilk*
+.idea/
+_._
+obj/
+bin/
+packages/
+/.vs/XiguaDanmakuHelper/v15

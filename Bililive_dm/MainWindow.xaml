@@ -1,0 +1,85 @@
+﻿<Window x:Class="Bililive_dm.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:bililiveDm="clr-namespace:Bililive_dm"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="西瓜直播弹幕助手" Height="300" Width="500">
+    <Window.Resources>
+
+        <DataTemplate x:Key="LogTemplate">
+
+            <TextBlock Text="{Binding }"
+                       TextWrapping="Wrap" Cursor="Hand" MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp" />
+
+        </DataTemplate>
+
+    </Window.Resources>
+    <DockPanel>
+        <StackPanel VerticalAlignment="Top" Orientation="Horizontal" Height="25" DockPanel.Dock="Top">
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="主播名"
+                       VerticalAlignment="Center" />
+            <TextBox x:Name="LiverName" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center"
+                     Width="150" />
+            <Button x:Name="ConnBtn" Content="连接" HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Click="connbtn_Click" Margin="20,0,0,0" Width="60" />
+
+            <Button Content="断开" Margin="20,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="60"
+                    x:Name="DisconnBtn" Click="Disconnbtn_OnClick" />
+            <Button x:Name="Test" Content="测试效果" HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Click="Test_OnClick" Margin="20,0,0,0" Width="60" />
+
+        </StackPanel>
+        <StackPanel VerticalAlignment="Center" DockPanel.Dock="Top" Orientation="Horizontal">
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="当前人气: " VerticalAlignment="Center" />
+            <TextBlock x:Name="OnlinePopularity" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Ø"
+                       VerticalAlignment="Center" />
+            <CheckBox Content="粉丝牌" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="showBrand"
+                      IsChecked="False" Checked="showBrand_OnChecked" Unchecked="showBrand_OnUnchecked" Margin="10,0,0,0"/>
+            <CheckBox Content="聊天" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="showChat"
+                      IsChecked="True" Checked="showChat_OnChecked" Unchecked="ShowChat_OnUnchecked" Margin="10,0,0,0"/>
+            <CheckBox Content="礼物及粉丝团" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="showPresent"
+                      IsChecked="True" Checked="showPresent_OnChecked" Unchecked="showPresent_OnUnchecked" Margin="10,0,0,0"/>
+            <CheckBox Content="点亮消息" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="showLike"
+                      IsChecked="True" Checked="ShowLike_OnChecked" Unchecked="ShowLike_OnUnchecked" Margin="10,0,0,0"/>
+            <CheckBox Content="弹幕朗读" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="danMu"
+                      IsChecked="True" Checked="Danmu_OnChecked" Unchecked="Danmu_OnUnchecked" Margin="10,0,0,0"/>
+
+        </StackPanel>
+
+        <TextBlock Text="非西瓜直播官方弹幕助手 最终作者挂神 感谢前代作者代码"
+                   DockPanel.Dock="Bottom" VerticalAlignment="Bottom" />
+
+        <TabControl x:Name="TabControl">
+            <TabItem Header="日志">
+
+                <ItemsControl x:Name="Log" ItemsSource="{Binding}" ItemTemplate="{StaticResource LogTemplate}">
+
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <ScrollViewer x:Name="LogScroll" CanContentScroll="True">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+
+            </TabItem>
+            <TabItem Header="设置">
+                <Grid>
+                    <bililiveDm:OptionDialog x:Name="OptionDialog" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+
+    </DockPanel>
+</Window>
