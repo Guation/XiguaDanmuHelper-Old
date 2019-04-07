@@ -463,9 +463,9 @@ namespace Bililive_dm
         public void Hecheng(string wenzi)
         {
             // 设置APPID/AK/SK
-            var APP_ID = "15893837";
-            var API_KEY = "2Hea7P5pYpzsUTiK3536QLDe";
-            var SECRET_KEY = "NujLUhutlFtPSxySU0IxvXQw5evB8luK";
+            var APP_ID = "";
+            var API_KEY = "";
+            var SECRET_KEY = "";
 
             var client = new Baidu.Aip.Speech.Tts(API_KEY, SECRET_KEY);
             client.Timeout = 60000;  // 修改超时时间
