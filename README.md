@@ -19,4 +19,4 @@ https://github.com/guation/XiguaDanmuHelper/blob/master/Bililive_dm/MainWindow.x
 
 注意！本版本不再更新，原因有两个
 1.将语音合成模块从程序内部移交至服务器，保证语音合成接口更新时程序不受影响，属于较大更新
-2.挂神因为重装电脑源码丢失，导致vs无法再将代码推送到此仓库。
+2.挂神因为重装电脑源码丢失，导致vs无法再将代码推送到此仓库，无奈之下只得新建仓库存放源码。
