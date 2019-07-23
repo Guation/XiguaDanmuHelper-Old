@@ -31,12 +31,12 @@ namespace Bililive_dm
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            ((MainWindow) Application.Current.MainWindow).Test_OnClick(null, null);
+            ((MainWindow)Application.Current.MainWindow).Test_OnClick(null, null);
         }
 
         private void ButtonBase_OnClick2(object sender, RoutedEventArgs e)
         {
-            var a = (StoreModel) LayoutRoot.DataContext;
+            var a = (StoreModel)LayoutRoot.DataContext;
             a.FullOverlayEffect1 = DefaultStore.FullOverlayEffect1;
             a.FullOverlayFontsize = DefaultStore.FullOverlayFontsize;
             a.MainOverlayEffect1 = DefaultStore.MainOverlayEffect1;
@@ -48,6 +48,7 @@ namespace Bililive_dm
             a.MainOverlayXoffset = DefaultStore.MainOverlayXoffset;
             a.MainOverlayYoffset = DefaultStore.MainOverlayYoffset;
             a.WtfEngineEnabled = DefaultStore.WtfEngineEnabled;
+            a.roomid = DefaultStore.roomid;
             a.SaveConfig();
         }
     }

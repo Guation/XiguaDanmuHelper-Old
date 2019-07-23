@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Bililive_dm.Annotations;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Xml.Serialization;
-using Bililive_dm.Annotations;
 
 namespace Bililive_dm
 {
@@ -23,6 +23,7 @@ namespace Bililive_dm
         private double _mainOverlayXoffset;
         private double _mainOverlayYoffset;
         private bool _wtfEngineEnabled;
+        private string _roomid;
 
         public StoreModel()
         {
@@ -37,6 +38,7 @@ namespace Bililive_dm
             _mainOverlayXoffset = Store.MainOverlayXoffset;
             _mainOverlayYoffset = Store.MainOverlayYoffset;
             _wtfEngineEnabled = Store.WtfEngineEnabled;
+            _roomid = Store.roomid;
         }
 
         public double MainOverlayXoffset
@@ -47,7 +49,7 @@ namespace Bililive_dm
                 if (value.Equals(_mainOverlayXoffset)) return;
                 _mainOverlayXoffset = Store.MainOverlayXoffset = value;
 
-                ((MainWindow) Application.Current.MainWindow).overlay.Top = SystemParameters.WorkArea.Top + value;
+                ((MainWindow)Application.Current.MainWindow).overlay.Top = SystemParameters.WorkArea.Top + value;
 
                 OnPropertyChanged();
             }
@@ -60,7 +62,7 @@ namespace Bililive_dm
             {
                 if (value.Equals(_mainOverlayYoffset)) return;
                 _mainOverlayYoffset = Store.MainOverlayYoffset = value;
-                ((MainWindow) Application.Current.MainWindow).overlay.Left = SystemParameters.WorkArea.Right -
+                ((MainWindow)Application.Current.MainWindow).overlay.Left = SystemParameters.WorkArea.Right -
                                                                              Store.MainOverlayWidth + value;
                 OnPropertyChanged();
             }
@@ -73,8 +75,8 @@ namespace Bililive_dm
             {
                 if (value.Equals(_mainOverlayWidth)) return;
                 _mainOverlayWidth = Store.MainOverlayWidth = value;
-                ((MainWindow) Application.Current.MainWindow).overlay.Width = value;
-                ((MainWindow) Application.Current.MainWindow).overlay.Left = SystemParameters.WorkArea.Right -
+                ((MainWindow)Application.Current.MainWindow).overlay.Width = value;
+                ((MainWindow)Application.Current.MainWindow).overlay.Left = SystemParameters.WorkArea.Right -
                                                                              value + Store.MainOverlayYoffset;
                 OnPropertyChanged();
             }
@@ -169,6 +171,18 @@ namespace Bililive_dm
                 OnPropertyChanged();
             }
         }
+
+        public string roomid
+        {
+            get => _roomid;
+            set
+            {
+                if (value.Equals(_roomid)) return;
+                Store.roomid = _roomid = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -57,12 +57,12 @@ namespace Bililive_dm
 
         void IDanmakuWindow.AddDanmaku(DanmakuType type, string comment, uint color)
         {
-            WTF_AddLiveDanmaku(_wtf, (int) type, 0, comment, 25, (int) color, 0, 0);
+            WTF_AddLiveDanmaku(_wtf, (int)type, 0, comment, 25, (int)color, 0, 0);
         }
 
         void IDanmakuWindow.OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (_wtf != IntPtr.Zero) WTF_SetFontScaleFactor(_wtf, (float) (Store.FullOverlayFontsize / 25.0f));
+            if (_wtf != IntPtr.Zero) WTF_SetFontScaleFactor(_wtf, (float)(Store.FullOverlayFontsize / 25.0f));
         }
 
         [DllImport("user32")]
@@ -147,7 +147,7 @@ namespace Bililive_dm
 
         private void WtfDanmakuWindow_Resize(object sender, EventArgs e)
         {
-            if (_wtf != IntPtr.Zero) WTF_Resize(_wtf, (uint) ClientSize.Width, (uint) ClientSize.Height);
+            if (_wtf != IntPtr.Zero) WTF_Resize(_wtf, (uint)ClientSize.Width, (uint)ClientSize.Height);
         }
 
         private void CreateWTF()
@@ -155,7 +155,7 @@ namespace Bililive_dm
             _wtf = WTF_CreateInstance();
             WTF_InitializeWithHwnd(_wtf, Handle);
             WTF_SetFontName(_wtf, "SimHei");
-            WTF_SetFontScaleFactor(_wtf, (float) (Store.FullOverlayFontsize / 25.0f));
+            WTF_SetFontScaleFactor(_wtf, (float)(Store.FullOverlayFontsize / 25.0f));
             WTF_SetCompositionOpacity(_wtf, 0.85f);
         }
 

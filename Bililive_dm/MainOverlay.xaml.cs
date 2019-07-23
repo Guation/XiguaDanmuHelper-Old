@@ -22,9 +22,9 @@ namespace Bililive_dm
         {
             // http://stackoverflow.com/a/551847
             var wndHelper = new WindowInteropHelper(this);
-            var exStyle = (int) GetWindowLong(wndHelper.Handle, (int) GetWindowLongFields.GWL_EXSTYLE);
-            exStyle |= (int) ExtendedWindowStyles.WS_EX_TOOLWINDOW;
-            SetWindowLong(wndHelper.Handle, (int) GetWindowLongFields.GWL_EXSTYLE, (IntPtr) exStyle);
+            var exStyle = (int)GetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE);
+            exStyle |= (int)ExtendedWindowStyles.WS_EX_TOOLWINDOW;
+            SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
 
 
@@ -80,7 +80,7 @@ namespace Bililive_dm
 
         private static int IntPtrToInt32(IntPtr intPtr)
         {
-            return unchecked((int) intPtr.ToInt64());
+            return unchecked((int)intPtr.ToInt64());
         }
 
         [DllImport("kernel32.dll", EntryPoint = "SetLastError")]

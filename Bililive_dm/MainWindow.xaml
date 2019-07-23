@@ -19,9 +19,9 @@
     </Window.Resources>
     <DockPanel>
         <StackPanel VerticalAlignment="Top" Orientation="Horizontal" Height="25" DockPanel.Dock="Top">
-            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="主播名"
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="房间号"
                        VerticalAlignment="Center" />
-            <TextBox x:Name="LiverName" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center"
+            <TextBox x:Name="LiverID" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center"
                      Width="150" />
             <Button x:Name="ConnBtn" Content="连接" HorizontalAlignment="Left" VerticalAlignment="Center"
                     Click="connbtn_Click" Margin="20,0,0,0" Width="60" />

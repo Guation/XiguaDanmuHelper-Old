@@ -2,8 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Bililive_dm.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="name" Type="string" Scope="User">
-      <Value Profile="(Default)">永恒de草薙</Value>
+    <Setting Name="name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sy挂神</Value>
+    </Setting>
+    <Setting Name="roomId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">110756724607</Value>
     </Setting>
   </Settings>
 </SettingsFile>

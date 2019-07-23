@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net;
 using System.Runtime.InteropServices;
 
 namespace Bililive_dm
@@ -19,6 +18,7 @@ namespace Bililive_dm
         public static double FullOverlayEffect1 = 400; //文字速度
         public static double FullOverlayFontsize = 35;
         public static bool WtfEngineEnabled = true;
+        public static string roomid = "162474";
     }
 
 
@@ -36,6 +36,7 @@ namespace Bililive_dm
         public static double FullOverlayEffect1 = 400; //文字速度
         public static double FullOverlayFontsize = 35;
         public static bool WtfEngineEnabled = true;
+        public static string roomid = "162474";
     }
 
     public static class Utils
@@ -58,7 +59,7 @@ namespace Bililive_dm
             GC.WaitForPendingFinalizers();
             if (removePages)
                 SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle,
-                    (UIntPtr) 0xFFFFFFFF, (UIntPtr) 0xFFFFFFFF);
+                    (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
         }
     }
 }

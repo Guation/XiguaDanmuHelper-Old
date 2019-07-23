@@ -16,7 +16,7 @@ namespace Bililive_dm
             Loaded += DanmakuTextControl_Loaded;
 
 
-            var sb = (Storyboard) Resources["Storyboard1"];
+            var sb = (Storyboard)Resources["Storyboard1"];
             Storyboard.SetTarget(sb.Children[2], this);
 
             (sb.Children[0] as DoubleAnimationUsingKeyFrames).KeyFrames[1].KeyTime =
@@ -49,7 +49,7 @@ namespace Bililive_dm
         {
             TextBox.FontSize = Store.MainOverlayFontsize;
             TextBox.Measure(new Size(Store.MainOverlayWidth, int.MaxValue));
-            var sb = (Storyboard) Resources["Storyboard1"];
+            var sb = (Storyboard)Resources["Storyboard1"];
             var kf1 = sb.Children[0] as DoubleAnimationUsingKeyFrames;
             kf1.KeyFrames[1].Value = TextBox.DesiredSize.Height + 4;
         }

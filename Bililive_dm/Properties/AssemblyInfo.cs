@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -9,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("西瓜直播弹幕助手")]
 [assembly: AssemblyDescription("西瓜直播弹幕助手")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("JerryYan")]
+[assembly: AssemblyCompany("Guation")]
 [assembly: AssemblyProduct("西瓜直播弹幕助手")]
-[assembly: AssemblyCopyright("JerryYan")]
+[assembly: AssemblyCopyright("Guation")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,11 +34,11 @@ using System.Windows;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //主題特定資源字典的位置
-    //(用於當資源不在頁面、
-    // 或應用程式資源字典)
+                                     //(用於當資源不在頁面、
+                                     // 或應用程式資源字典)
     ResourceDictionaryLocation.SourceAssembly //泛用資源字典的位置
-    //(用於當資源不在頁面、
-    // 應用程式，或任何特定主題的資源字典)
+                                              //(用於當資源不在頁面、
+                                              // 應用程式，或任何特定主題的資源字典)
 )]
 
 
@@ -52,5 +53,7 @@ using System.Windows;
 // 指定為預設值:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.2.1.3")]
-[assembly: AssemblyFileVersion("0.2.1.3")]
+[assembly: AssemblyVersion("0.2.1.5")]
+[assembly: AssemblyFileVersion("0.2.1.5")]
+[assembly: NeutralResourcesLanguage("zh")]
+

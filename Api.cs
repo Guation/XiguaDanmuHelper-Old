@@ -21,21 +21,32 @@ namespace XiguaDanmakuHelper
         protected string cursor = "0";
         public bool isLive = false;
         public bool isValidRoom = false;
-        private long RoomID = 0;
+        public string RoomID = "0";
+        private string CharID = "0";
         public string Title = "";
         public User user;
         private int _updRoomCount = 0;
         private string liverName;
-
+/*
         public Api()
         {
-            liverName = "永恒de草薙";
+            liverName = "sy挂神";
         }
 
         public Api(string name)
         {
             liverName = name;
         }
+*/
+        public Api()
+        {
+            RoomID = "162474";
+        }
+        public Api(string id)
+        {
+            RoomID = id;
+        }
+
 
         public static event WhenMessage OnMessage;
         public static event RoomCounting OnRoomCounting;
@@ -45,10 +56,12 @@ namespace XiguaDanmakuHelper
 
         public async Task<bool> ConnectAsync()
         {
-            await UpdateRoomInfoAsync();
+            //await UpdateRoomInfoAsync();
+            //await UpdateRoomAsync();
+            UpdateRoom();
             if (!isValidRoom)
             {
-                LogMessage?.Invoke("请确认输入的用户名是否正确");
+                LogMessage?.Invoke("请确认输入的房间号是否正确");
                 return false;
             }
 
@@ -68,6 +81,64 @@ namespace XiguaDanmakuHelper
 
             OnRoomCounting?.Invoke(_roomPopularity);
         }
+
+        public async Task<bool> UpdateRoomAsync() {
+            isLive = true;
+            var url = $"https://live.ixigua.com/{RoomID}";
+            string _text;
+            try
+            {
+                _text = await Common.HttpGetAsync(url);
+            }
+            catch (WebException)
+            {
+                LogMessage?.Invoke("网络错误");
+                return false;
+            }
+            //LogMessage?.Invoke(_text);
+            /*
+            var j = JObject.Parse(_text);
+            if (!(j["data"] is null))
+            {
+                isValidRoom = true;
+                CharID = (string)j["data"]["id"];
+            }*/
+            return true;
+        }
+
+        public bool UpdateRoom()
+        {
+            isLive = true;
+            var url = $"https://live.ixigua.com/{RoomID}";
+            string _text;
+            try
+            {
+                _text = Common.HttpGet(url,true);
+            }
+            catch (WebException)
+            {
+                LogMessage?.Invoke("网络错误");
+                return false;
+            }
+            //LogMessage?.Invoke(_text);
+            try
+            {
+                string[] data1 = _text.Split(new String[] { "id=\"SSR_HYDRATED_DATA\">" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data2 = data1[1].Split(new String[] { "</script>" }, StringSplitOptions.RemoveEmptyEntries);
+                //LogMessage?.Invoke(data2[0]);
+                var j = JObject.Parse(data2[0]);
+                if (!(j["roomData"] is null))
+                {
+                    isValidRoom = true;
+                    CharID = (string)j["roomData"]["id"];
+                }
+            }
+            catch (Exception) {
+                LogMessage?.Invoke("出现故障");
+            } 
+            return true;
+        }
+
 
         public async Task<bool> UpdateRoomInfoAsync()
         {
@@ -92,13 +163,13 @@ namespace XiguaDanmakuHelper
                     return false;
                 }
 
-                Title = (string) j["room"]["title"];
+                Title = (string)j["room"]["title"];
                 user = new User(j);
-                if (isLive && (int) j["room"]?["status"] != 2)
+                if (isLive && (int)j["room"]?["status"] != 2)
                 {
                     OnLeave?.Invoke();
                 }
-                isLive = (int) j["room"]?["status"] == 2;
+                isLive = (int)j["room"]?["status"] == 2;
                 return true;
             }
             else
@@ -126,11 +197,17 @@ namespace XiguaDanmakuHelper
 
                         if (_j["cells"].Any())
                         {
-                            isValidRoom = true;
-                            isLive = (bool) _j["cells"][0]["anchor"]["user_info"]["is_living"];
-                            RoomID = (long)_j["cells"][0]["anchor"]["room_id"];
-                            liverName = new User((JObject)_j["cells"][0]).ToString();
-                            user = new User((JObject)_j["cells"][0]);
+                            if (new User((JObject)_j["cells"][0]).ToString() == liverName)
+                            {
+                                isValidRoom = true;
+                                isLive = (bool)_j["cells"][0]["anchor"]["user_info"]["is_living"];
+                                RoomID = (string)_j["cells"][0]["anchor"]["room_id"];
+                                liverName = new User((JObject)_j["cells"][0]).ToString();
+                                user = new User((JObject)_j["cells"][0]);
+                            }
+                            else {
+                                return await UpdateRoomInfoAsync();
+                            }
                         }
                         else
                         {
@@ -152,7 +229,7 @@ namespace XiguaDanmakuHelper
             if (isLive)
             {
                 var url = $"https://i.snssdk.com/videolive/room/enter?version_code=730&device_platform=android";
-                var data = $"room_id={RoomID}&version_code=730&device_platform=android";
+                var data = $"room_id={CharID}&version_code=730&device_platform=android";
                 string _text;
                 try
                 {
@@ -172,7 +249,7 @@ namespace XiguaDanmakuHelper
 
                 isValidRoom = (int)j["base_resp"]?["status_code"] == 0;
                 Title = (string) j["data"]["title"];
-                RoomID = (long) j["data"]["id"];
+                RoomID = (string) j["data"]["id"];
                 user = new User(j);
 
                 isLive = (int) j["room"]?["status"] == 2;
@@ -205,7 +282,7 @@ namespace XiguaDanmakuHelper
                         {
                             isValidRoom = true;
                             isLive = (bool) _j["cells"][0]["anchor"]["user_info"]["is_living"];
-                            RoomID = (int)_j["cells"][0]["anchor"]["room_id"];
+                            RoomID = (string)_j["cells"][0]["anchor"]["room_id"];
                             liverName = (new User((JObject)_j["cells"][0])).ToString();
                         }
                         else
@@ -227,12 +304,13 @@ namespace XiguaDanmakuHelper
         {
             if (!isValidRoom)
             {
-                UpdateRoomInfo();
+                //UpdateRoomInfo();
+                UpdateRoom();
                 return;
             }
 
             var url =
-                $"https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={RoomID}&version_code=730&device_platform=android";
+                $"https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={CharID}&version_code=730&device_platform=android";
             string _text;
             try
             {
@@ -255,7 +333,8 @@ namespace XiguaDanmakuHelper
             cursor = (string) j["extra"]["cursor"];
             if (j["data"] is null)
             {
-                UpdateRoomInfo();
+                //UpdateRoomInfo();
+                UpdateRoom();
                 return;
             }
 

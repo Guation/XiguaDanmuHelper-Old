@@ -5,8 +5,8 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,8 +16,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using XiguaDanmakuHelper;
-using Baidu;
-using System.Diagnostics;
 
 namespace Bililive_dm
 {
@@ -29,8 +27,7 @@ namespace Bililive_dm
         private const int WS_EX_TRANSPARENT = 0x20;
         private const int GWL_EXSTYLE = -20;
         private const int _maxCapacity = 100;
-        private int abc = 0;
-
+        private int[] abc = { 0, 0, 0 };
         private readonly Queue<MessageModel> _danmakuQueue = new Queue<MessageModel>();
 
         private readonly ObservableCollection<string> _messageQueue = new ObservableCollection<string>();
@@ -47,33 +44,50 @@ namespace Bililive_dm
         private readonly Thread releaseThread;
 
         private StoreModel settings;
-        
+
         private bool ChatOpt;
         private bool GiftOpt;
         private bool LikeOpt;
         private bool Danmu1;
 
+        private int spd = 5, pit = 5, vol = 1, per = 4;
 
         public MainWindow()
         {
-            
-            InitializeComponent();
-            
-            //初始化日志
 
+            InitializeComponent();
+
+            //初始化日志
+            /*
             try
             {
                 LiverName.Text = Properties.Settings.Default.name;
             }
             catch
             {
-                LiverName.Text = "sy挂神";
+                LiverName.Text = "";
+            }*/
+            try
+            {
+                var a = new StoreModel();
+                LiverID.Text = a.roomid;
             }
-
+            catch
+            {
+                try
+                {
+                    LiverID.Text = Properties.Settings.Default.roomId;
+                }
+                catch
+                {
+                    LiverID.Text = "";
+                }
+            }
             ChatOpt = true;
             GiftOpt = true;
             LikeOpt = true;
             Danmu1 = true;
+
             b = new Api();
             overlay_enabled = true;
             OpenOverlay();
@@ -83,7 +97,7 @@ namespace Bililive_dm
 
             Api.OnMessage += b_ReceivedDanmaku;
             Api.OnLeave += OnLiveStop;
-//            b.OnMessage += ProcDanmaku;
+            //            b.OnMessage += ProcDanmaku;
             Api.LogMessage += b_LogMessage;
             Api.OnRoomCounting += b_ReceivedRoomCount;
 
@@ -125,7 +139,7 @@ namespace Bililive_dm
                     lock (_danmakuQueue)
                     {
                         var count = 0;
-                        if (_danmakuQueue.Any()) count = (int) Math.Ceiling(_danmakuQueue.Count / 30.0);
+                        if (_danmakuQueue.Any()) count = (int)Math.Ceiling(_danmakuQueue.Count / 30.0);
 
                         for (var i = 0; i < count; i++)
                             if (_danmakuQueue.Any())
@@ -175,7 +189,7 @@ namespace Bililive_dm
                     new XmlSerializer(typeof(StoreModel));
                 var reader = new StreamReader(new IsolatedStorageFileStream(
                     "settings.xml", FileMode.Open, isoStore));
-                settings = (StoreModel) settingsreader.Deserialize(reader);
+                settings = (StoreModel)settingsreader.Deserialize(reader);
                 reader.Close();
             }
             catch (Exception)
@@ -237,20 +251,23 @@ namespace Bililive_dm
 
         private async void connbtn_Click(object sender, RoutedEventArgs e)
         {
-            Name = LiverName.Text.Trim();
-            b = new Api(Name);
-
+            //Name = LiverName.Text.Trim();
+            //b = new Api(Name);
+            b = new Api(LiverID.Text.Trim());
             ConnBtn.IsEnabled = false;
             DisconnBtn.IsEnabled = false;
             var connectresult = false;
             logging("正在连接");
-
+            var a = new StoreModel();
+            a.roomid = LiverID.Text;
+            a.SaveConfig();
             connectresult = await b.ConnectAsync();
 
             if (connectresult)
             {
                 logging("連接成功");
                 AddDMText("提示", "連接成功", true);
+                Landu();
                 getDanmakuThread.Start();
             }
             else
@@ -260,14 +277,15 @@ namespace Bililive_dm
                 ConnBtn.IsEnabled = true;
             }
 
-            LiverName.Text = b.user.ToString();
+            //LiverName.Text = b.user.ToString();
+            LiverID.Text = b.RoomID.ToString();
             DisconnBtn.IsEnabled = true;
         }
 
         public void b_ReceivedRoomCount(long popularity)
         {
-//            logging("當前房間人數:" + e.UserCount);
-//            AddDMText("當前房間人數", e.UserCount+"", true);
+            //            logging("當前房間人數:" + e.UserCount);
+            //            AddDMText("當前房間人數", e.UserCount+"", true);
             //AddDMText(e.Danmaku.CommentUser, e.Danmaku.CommentText);
             if (CheckAccess())
             {
@@ -300,52 +318,52 @@ namespace Bililive_dm
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
                             AddDMText(danmakuModel.ChatModel.user,
-                                danmakuModel.ChatModel.content);
+                                DelEmoji(danmakuModel.ChatModel.content));
                         }));
                     }
                     break;
                 case MessageEnum.Gifting:
                     break;
                 case MessageEnum.Gift:
-                {
-                    if (GiftOpt)
                     {
-                        logging("收到礼物 : " + danmakuModel.GiftModel.user + " 赠送的 " + danmakuModel.GiftModel.count +
-                                " 个 " + danmakuModel.GiftModel.GetName());
-                        Hecheng("感谢" + danmakuModel.GiftModel.user + " 赠送的 " + danmakuModel.GiftModel.count +
-                                " 个 " + danmakuModel.GiftModel.GetName());
+                        if (GiftOpt)
+                        {
+                            logging("收到礼物 : " + danmakuModel.GiftModel.user + " 赠送的 " + danmakuModel.GiftModel.count +
+                                    " 个 " + danmakuModel.GiftModel.GetName());
+                            Hecheng("感谢" + danmakuModel.GiftModel.user + " 赠送的 " + danmakuModel.GiftModel.count +
+                                    " 个 " + danmakuModel.GiftModel.GetName());
                             Dispatcher.BeginInvoke(new Action(() =>
                         {
                             AddDMText("收到礼物",
                                 danmakuModel.GiftModel.ToString(), true);
                         }));
+                        }
+                        break;
                     }
-                    break;
-                }
                 case MessageEnum.Join:
-                {
-                    if (GiftOpt)
                     {
-                        logging("粉丝团新成员 : 欢迎 " + danmakuModel.UserModel + " 加入了粉丝团");
-                        Hecheng("欢迎 " + danmakuModel.UserModel + " 加入了粉丝团");
+                        if (GiftOpt)
+                        {
+                            logging("粉丝团新成员 : 欢迎 " + danmakuModel.UserModel + " 加入了粉丝团");
+                            Hecheng("欢迎 " + danmakuModel.UserModel + " 加入了粉丝团");
                             Dispatcher.BeginInvoke(new Action(() =>
                         {
                             AddDMText("粉丝团新成员",
                                 "欢迎" + danmakuModel.UserModel + "加入了粉丝团", true);
                         }));
+                        }
+                        break;
                     }
-                    break;
-                }
                 case MessageEnum.Like:
-                {
-                    if (LikeOpt)
                     {
-                        logging($"用户 {danmakuModel.UserModel} 点了喜欢");
-                        AddDMText("点亮",
-                            "用户" + danmakuModel.UserModel + "点了喜欢", true);
+                        if (LikeOpt)
+                        {
+                            logging($"用户 {danmakuModel.UserModel} 点了喜欢");
+                            AddDMText("点亮",
+                                "用户" + danmakuModel.UserModel + "点了喜欢", true);
+                        }
+                        break;
                     }
-                    break;
-                }
             }
         }
 
@@ -373,7 +391,7 @@ namespace Bililive_dm
                 if (warn) c.UserName.Foreground = Brushes.Red;
                 c.Text.Text = text;
                 c.ChangeHeight();
-                var sb = (Storyboard) c.Resources["Storyboard1"];
+                var sb = (Storyboard)c.Resources["Storyboard1"];
                 //Storyboard.SetTarget(sb,c);
                 sb.Completed += sb_Completed;
                 overlay.LayoutRoot.Children.Add(c);
@@ -394,7 +412,7 @@ namespace Bililive_dm
                 c.UserName.Text = user.ToString();
                 c.Text.Text = text;
                 c.ChangeHeight();
-                var sb = (Storyboard) c.Resources["Storyboard1"];
+                var sb = (Storyboard)c.Resources["Storyboard1"];
                 //Storyboard.SetTarget(sb,c);
                 sb.Completed += sb_Completed;
                 overlay.LayoutRoot.Children.Add(c);
@@ -426,6 +444,9 @@ namespace Bililive_dm
 
         private void Disconnbtn_OnClick(object sender, RoutedEventArgs e)
         {
+            abc[0] = 0;
+            abc[1] = 0;
+            abc[2] = 0;
             ConnBtn.IsEnabled = true;
             getDanmakuThread.Abort();
             getDanmakuThread = new Thread(() =>
@@ -440,7 +461,8 @@ namespace Bililive_dm
                     {
                         Thread.Sleep(100000);
                     }
-            }) {IsBackground = true};
+            })
+            { IsBackground = true };
         }
 
         private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -462,58 +484,49 @@ namespace Bililive_dm
         // 合成
         public void Hecheng(string wenzi)
         {
-            // 设置APPID/AK/SK
-            var APP_ID = "15893837";
-            var API_KEY = "2Hea7P5pYpzsUTiK3536QLDe";
-            var SECRET_KEY = "NujLUhutlFtPSxySU0IxvXQw5evB8luK";
-
-            var client = new Baidu.Aip.Speech.Tts(API_KEY, SECRET_KEY);
-            client.Timeout = 60000;  // 修改超时时间
-            // 可选参数
-            var option = new Dictionary<string, object>()
-    {
-        {"spd", 5}, // 语速
-        {"vol", 1}, // 音量
-        {"per", 4}  // 发音人，4：情感度丫丫童声
-    };
             if (Danmu1)
             {
-                var result = client.Synthesis(wenzi, option);
-
-                if (result.ErrorCode == 0)  // 或 result.Success
+                string url = $"http://vps.guation.cn:8080/?msg={wenzi}&spd={spd}&pit={pit}&vol={vol}&per={per}";
+                if (Common.HttpDownload(url, "tmp/" + abc[0] + ".mp3"))
                 {
-                    File.WriteAllBytes("tmp/" + abc + ".mp3", result.Data);
-                    Landu("tmp/" + abc + ".mp3");
-                    abc++;
-
+                    //logging(mp3Player.msg);
+                    abc[2]++;
+                    abc[0]++;
                 }
             }
         }
 
-        private void Landu(string mp3FilePath) {
-            // 需要的头文件
+        private void Landu()
+        {
+            Thread td = new Thread((ThreadStart)delegate
+            {
+                Mp3Player mp3Player = new Mp3Player();
+                while (true)
+                {
+                    if (abc[2] != 0)
+                    {
+                        mp3Player.Open("tmp\\" + abc[1] + ".mp3");
+                        abc[1]++;
+                        abc[2]--;
+                    }
 
+                    if (abc[2] > 10)
+                    {
+                        abc[2] = 1;
+                        abc[1] = abc[0];
+                        logging("弹幕朗读缓存达到极限，已跳过部分弹幕。");
+                    }
+                    System.Threading.Thread.Sleep(200);
+                }
 
-            // 这里是要调用的可执行文件的文件夹目录
-            string targetPath = string.Format(System.Environment.CurrentDirectory);
-
-            // Process:提供对本地和远程进程的访问并使你能够启动和停止本地系统进程
-            Process process = new Process();
-
-            // 初始化可执行文件的一些基础信息
-            process.StartInfo.WorkingDirectory = targetPath; // 初始化可执行文件的文件夹信息
-            process.StartInfo.FileName = "cmdmp3win.exe"; // 初始化可执行文件名
-
-            // 当我们需要给可执行文件传入参数时候可以设置这个参数
-            // "para1 para2 para3" 参数为字符串形式，每一个参数用空格隔开
-            process.StartInfo.Arguments = mp3FilePath;
-            process.StartInfo.UseShellExecute = true;        // 使用操作系统shell启动进程
-
-            // 启动可执行文件
-            process.Start();
+            });
+            td.SetApartmentState(ApartmentState.STA);
+            td.IsBackground = true;
+            td.Start();
         }
 
-        private string Runcmd(string str) {
+        private string Runcmd(string str)
+        {
             System.Diagnostics.Process p = new System.Diagnostics.Process();
             p.StartInfo.FileName = "cmd.exe";
             p.StartInfo.UseShellExecute = false;    //是否使用操作系统shell启动
@@ -546,6 +559,20 @@ namespace Bililive_dm
             p.Close();
             return output;
         }
+
+        private string DelEmoji(string str)
+        {
+            foreach (var a in str)
+            {
+                byte[] bts = Encoding.UTF32.GetBytes(a.ToString());
+                if (bts[0].ToString() == "253" && bts[1].ToString() == "255")
+                {
+                    str = str.Replace(a.ToString(), "");
+                }
+            }
+            return str;
+        }
+
 
         #region Runtime settings
 
